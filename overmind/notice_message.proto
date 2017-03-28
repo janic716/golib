@@ -1,0 +1,98 @@
+package overmind;
+
+/**
+ * 业务信息
+ * REQ是S->C, ACK是C->S
+ **/
+
+// type = 1 
+message NewMessageReq {
+}
+
+message NewMessageAck {
+}
+
+// type = 6
+message ClubReq {
+}
+
+message ClubAck {
+}
+
+// type = 7
+message ChatNewMessageReq {
+	required uint32 mid = 1;
+	required uint32 cid = 2;
+	optional uint64 mid_extend = 3;
+	optional uint64 cid_extend = 4;
+}
+
+message ChatNewMessageAck {
+}
+
+// type = 8
+message ChatMarkReadReq {
+	required uint32 mid = 1;
+	required uint32 cid = 2;
+	optional uint64 mid_extend = 3;
+	optional uint64 cid_extend = 4;
+}
+
+message ChatMarkReadAck {
+}
+
+// type = 9
+message LiveComment {
+	required uint64 cid = 1;
+	required uint64 uid = 2;
+	required uint32 time = 3;
+	required string user_name = 4;
+	required string user_avatar = 5;
+	optional string content = 6;
+	optional bool is_verified = 7;
+	optional uint64 reply_uid = 8;
+	optional string reply_user_name = 9;
+	optional bool friend_with_anchorperson = 10;
+}
+
+message LiveAnonymousComment {
+	required uint64 cid = 1;
+	required string uid = 2;
+	required uint32 time = 3;
+	required string user_name = 4;
+	required string user_avatar = 5;
+	optional string content = 6;
+}
+
+message SystemNotice {
+	required uint64 cid = 1;
+	required uint32 time = 2;
+	required string type = 3;
+	required string content = 4;
+	optional string style = 5;
+	optional uint64 uid = 6;
+	optional string user_name = 7;
+	optional string user_avatar = 8;
+	optional bool is_verified = 9;
+}
+
+message LiveNewIteractionReq {
+	required uint64 nid = 1;
+	required uint64 lid = 2;
+	optional uint32 audience_num = 3;
+	optional uint32 like_num = 4;
+	repeated LiveComment comments = 5;
+	optional uint32 audience_accum_num = 6;
+	repeated LiveAnonymousComment anonymous_comments = 7;
+	optional SystemNotice system_notice = 8;
+}
+
+message LiveNewIteractionAck {
+}
+
+// type = 253
+message BroadcastReq {
+}
+
+message BroadcastAck {
+}
