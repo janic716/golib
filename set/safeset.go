@@ -2,10 +2,11 @@ package set
 
 import (
 	"fmt"
-	"reflect"
 	"strings"
 	"sync"
 )
+
+const defaultSetSize = 16
 
 type Set interface {
 	Add(val interface{})
@@ -20,43 +21,31 @@ type SafeSet struct {
 	sync.RWMutex
 }
 
-func NewHashSet(slice interface{}) *SafeSet {
-	set := &SafeSet{m: make(map[interface{}]bool)}
-	if slice != nil {
-		tp := reflect.TypeOf(slice)
-		if tp.Kind() != reflect.Slice {
-			return set
-		}
-		value := reflect.ValueOf(slice)
-		l := value.Len()
-		for i := 0; i < l; i++ {
-			v := value.Index(i)
-			set.Add(v.Interface())
-		}
+func NewSafeSet(eles ...interface{}) *SafeSet {
+	len := len(eles) * 2
+	if len == 0 {
+		len = defaultSetSize
 	}
+	set := &SafeSet{m: make(map[interface{}]bool, len)}
+	set.Adds(eles)
 	return set
 }
 
-func (s *SafeSet) Add(val interface{}) {
+func (s *SafeSet) Add(ele interface{}) {
 	s.Lock()
-	s.m[val] = true
+	s.m[ele] = true
 	s.Unlock()
 }
 
-func (s *SafeSet) AddSlice(slice interface{}) {
-	if slice != nil {
-		tp := reflect.TypeOf(slice)
-		kind := tp.Kind()
-		if kind != reflect.Slice && kind != reflect.Array && kind != reflect.String {
-			return
-		}
-		value := reflect.ValueOf(slice)
-		l := value.Len()
-		for i := 0; i < l; i++ {
-			v := value.Index(i)
-			s.Add(v.Interface())
-		}
+func (s *SafeSet) Adds(eles ...interface{}) {
+	if len(eles) == 0 {
+		return
 	}
+	s.Lock()
+	for ele := range eles {
+		s.m[ele] = true
+	}
+	s.Unlock()
 }
 
 func (s *SafeSet) Remove(val interface{}) {

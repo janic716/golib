@@ -14,7 +14,7 @@ func TestNewHashSet(t *testing.T) {
 	list = append(list, "e")
 	list = append(list, "f")
 
-	set := NewHashSet(list)
+	set := NewSafeSet(list)
 
 	fmt.Println(set)
 	var res bool
@@ -35,7 +35,7 @@ func TestHashSet_Adds(t *testing.T) {
 	list = append(list, "e")
 	list = append(list, "f")
 
-	set := NewHashSet(nil)
+	set := NewSafeSet(nil)
 	set.AddSlice(list)
 	fmt.Println(set.Has("f"))
 }
