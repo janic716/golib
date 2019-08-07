@@ -9,19 +9,19 @@ import (
 
 type Set interface {
 	Add(val interface{})
-	AddSlice(slice interface{})
+	Adds(slice interface{})
 	Has(val interface{}) bool
 	Clear()
 	Remove(val interface{})
 }
 
-type HashSet struct {
+type SafeSet struct {
 	m map[interface{}]bool
 	sync.RWMutex
 }
 
-func NewHashSet(slice interface{}) *HashSet {
-	set := &HashSet{m: make(map[interface{}]bool)}
+func NewHashSet(slice interface{}) *SafeSet {
+	set := &SafeSet{m: make(map[interface{}]bool)}
 	if slice != nil {
 		tp := reflect.TypeOf(slice)
 		if tp.Kind() != reflect.Slice {
@@ -37,13 +37,13 @@ func NewHashSet(slice interface{}) *HashSet {
 	return set
 }
 
-func (s *HashSet) Add(val interface{}) {
+func (s *SafeSet) Add(val interface{}) {
 	s.Lock()
-	defer s.Unlock()
 	s.m[val] = true
+	s.Unlock()
 }
 
-func (s *HashSet) AddSlice(slice interface{}) {
+func (s *SafeSet) AddSlice(slice interface{}) {
 	if slice != nil {
 		tp := reflect.TypeOf(slice)
 		kind := tp.Kind()
@@ -59,31 +59,31 @@ func (s *HashSet) AddSlice(slice interface{}) {
 	}
 }
 
-func (s *HashSet) Remove(val interface{}) {
+func (s *SafeSet) Remove(val interface{}) {
 	s.Lock()
-	defer s.Unlock()
 	delete(s.m, val)
+	s.Unlock()
 }
 
-func (s *HashSet) Has(val interface{}) bool {
+func (s *SafeSet) Has(val interface{}) bool {
 	s.RLock()
-	s.RUnlock()
 	_, found := s.m[val]
+	s.RUnlock()
 	return found
 }
 
-func (s *HashSet) Clear() {
+func (s *SafeSet) Clear() {
 	s.Lock()
-	defer s.Unlock()
 	s.m = make(map[interface{}]bool)
+	s.Unlock()
 }
 
-func (s HashSet) String() string {
+func (s SafeSet) String() string {
 	s.RLock()
-	s.RUnlock()
 	var list []string
 	for k, _ := range s.m {
 		list = append(list, fmt.Sprint(k))
 	}
+	s.RUnlock()
 	return fmt.Sprintf("[%s]", strings.Join(list, " "))
 }
