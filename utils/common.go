@@ -17,13 +17,13 @@ func Empty(v interface{}) bool {
 	}
 	switch a := v.(type) {
 	case string:
-		return a == ""
+		return len(a) == 0
 	case bool:
 		return !a
 	}
 	val := reflect.ValueOf(v)
 	switch val.Kind() {
-	case reflect.Array, reflect.Map, reflect.Slice, reflect.String:
+	case reflect.Array, reflect.Map, reflect.Slice:
 		return val.Len() == 0
 	case reflect.Bool:
 		return !val.Bool()
